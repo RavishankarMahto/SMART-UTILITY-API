@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Smart Utility Dashboard</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+      color: #333;
+    "
+  >
+    <h2 style="color: #007bff">URL Shortener</h2>
+    <input
+      id="longUrl"
+      placeholder="Enter long URL"
+      style="padding: 8px; width: 300px"
+    />
+    <button onclick="shortenUrl()" style="padding: 8px 12px; margin-left: 5px">
+      Shorten
+    </button>
+    <p
+      id="shortUrlContainer"
+      style="
+        margin-top: 10px;
+        background: #fff;
+        padding: 10px;
+        border-radius: 5px;
+      "
+    ></p>
+
+    <h2 style="color: #007bff; margin-top: 30px">Weather Info</h2>
+    <input
+      id="city"
+      placeholder="Enter city"
+      style="padding: 8px; width: 300px"
+    />
+    <button onclick="getWeather()" style="padding: 8px 12px; margin-left: 5px">
+      Get Weather
+    </button>
+    <pre
+      id="weatherResult"
+      style="
+        background: #fff;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+      "
+    ></pre>
+
+    <h2 style="color: #007bff; margin-top: 30px">Word Meaning</h2>
+    <input
+      id="word"
+      placeholder="Enter word"
+      style="padding: 8px; width: 300px"
+    />
+    <button onclick="getMeaning()" style="padding: 8px 12px; margin-left: 5px">
+      Get Meaning
+    </button>
+    <pre
+      id="wordResult"
+      style="
+        background: #fff;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+      "
+    ></pre>
+
+    <script>
+      async function shortenUrl() {
+        const longUrl = document.getElementById("longUrl").value;
+        const res = await fetch("http://localhost:5000/api/url/shorten", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ longUrl }),
+        });
+        const data = await res.json();
+        document.getElementById("shortUrlContainer").innerHTML = `
+          <strong>Original:</strong> <a href="${longUrl}" target="_blank">${longUrl}</a><br>
+          <strong>Shortened:</strong> <a href="${data.shortUrl}" target="_blank">${data.shortUrl}</a>
+        `;
+        document.getElementById("longUrl").value = "";
+      }
+
+      async function getWeather() {
+        const city = document.getElementById("city").value;
+        const res = await fetch(
+          `http://localhost:5000/api/weather?city=${city}`
+        );
+        const data = await res.json();
+        document.getElementById("weatherResult").innerText = JSON.stringify(
+          data,
+          null,
+          2
+        );
+      }
+
+      async function getMeaning() {
+        const word = document.getElementById("word").value;
+        const res = await fetch(`http://localhost:5000/api/word?word=${word}`);
+        const data = await res.json();
+        document.getElementById("wordResult").innerText = JSON.stringify(
+          data.meanings || data,
+          null,
+          2
+        );
+      }
+    </script>
+  </body>
+</html>
